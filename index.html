@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="ml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIT Play - Web & Game Store</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, sans-serif; }
+        body { background-color: #0f172a; color: #f8fafc; padding-bottom: 40px; }
+
+        /* Fullscreen Welcome & Login Screen */
+        #welcome-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(135deg, #0f172a, #1e1b4b);
+            z-index: 1000; display: flex; flex-direction: column; justify-content: center; align-items: center;
+            padding: 20px; text-align: center;
+        }
+        #welcome-screen h1 { font-size: 2.2rem; color: #38bdf8; margin-bottom: 8px; }
+        #welcome-screen p { color: #94a3b8; margin-bottom: 20px; font-size: 0.9rem; }
+
+        .form-box { width: 100%; max-width: 320px; display: flex; flex-direction: column; gap: 12px; }
+        .input-field, .select-field, textarea.input-field {
+            width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #334155;
+            background: #1e293b; color: white; outline: none; font-size: 0.95rem;
+        }
+        .action-btn {
+            padding: 12px; border-radius: 10px; border: none;
+            background: #0284c7; color: white; font-weight: bold; cursor: pointer; font-size: 1rem;
+            transition: 0.2s;
+        }
+        .action-btn:hover { background: #0369a1; }
+
+        /* Header / Navbar */
+        header {
+            background: rgba(30, 41, 59, 0.9);
+            backdrop-filter: blur(10px);
+            position: sticky; top: 0; z-index: 100;
+            padding: 12px 16px;
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid #334155;
+        }
+        .logo { font-size: 1.4rem; font-weight: 800; color: #38bdf8; }
+        .logo span { color: #f43f5e; }
+
+        .header-right { display: flex; align-items: center; gap: 10px; }
+        .search-box {
+            padding: 8px 12px; border-radius: 20px; border: 1px solid #475569;
+            background: #1e293b; color: #fff; width: 130px; outline: none; font-size: 0.85rem;
+        }
+        .icon-btn {
+            background: #1e293b; border: 1px solid #334155; color: white;
+            width: 38px; height: 38px; border-radius: 50%;
+            display: flex; justify-content: center; align-items: center; cursor: pointer; font-size: 1.1rem;
+        }
+
+        /* Banner */
+        .hero {
+            margin: 16px; padding: 20px; border-radius: 16px;
+            background: linear-gradient(135deg, #4f46e5, #7c3aed, #db2777);
+            text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+        .hero h1 { font-size: 1.5rem; margin-bottom: 6px; }
+
+        /* Categories */
+        .categories { display: flex; gap: 8px; padding: 0 16px; margin-bottom: 16px; overflow-x: auto; }
+        .cat-btn {
+            padding: 8px 16px; border-radius: 20px; border: none;
+            background: #1e293b; color: #94a3b8; font-weight: 600; cursor: pointer; white-space: nowrap; font-size: 0.85rem;
+        }
+        .cat-btn.active { background: #38bdf8; color: #0f172a; }
+
+        /* Section Header */
+        .section-header { margin: 16px; display: flex; justify-content: space-between; align-items: center; }
+        .section-title { font-size: 1.1rem; color: #e2e8f0; font-weight: bold; }
+
+        /* App Grid & Empty State */
+        .app-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; padding: 0 16px; }
+        .no-games {
+            text-align: center; padding: 40px 20px; color: #64748b; grid-column: 1 / -1;
+            background: #1e293b; border-radius: 12px; border: 1px dashed #334155;
+        }
+
+        .app-card {
+            background: #1e293b; border-radius: 14px; padding: 12px;
+            display: flex; gap: 12px; align-items: center; border: 1px solid #334155;
+        }
+        .app-icon {
+            width: 50px; height: 50px; border-radius: 12px; background: #334155;
+            display: flex; justify-content: center; align-items: center; font-size: 1.6rem; flex-shrink: 0;
+        }
+        .app-details { flex-grow: 1; }
+        .app-title { font-size: 0.95rem; font-weight: bold; color: #f8fafc; }
+        .play-btn {
+            padding: 6px 14px; border-radius: 6px; border: none;
+            background: #0284c7; color: white; font-weight: bold; font-size: 0.8rem; cursor: pointer;
+        }
+
+        /* Modals */
+        .modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8); backdrop-filter: blur(6px);
+            z-index: 500; display: none; justify-content: center; align-items: center; padding: 20px;
+        }
+        .modal-content {
+            background: #1e293b; width: 100%; max-width: 380px; border-radius: 16px; padding: 20px;
+            border: 1px solid #334155; position: relative; max-height: 90vh; overflow-y: auto;
+        }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .close-btn { background: none; border: none; color: #94a3b8; font-size: 1.2rem; cursor: pointer; }
+
+        /* Game Screen Overlay */
+        #game-player-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 2000; display: none; flex-direction: column; }
+        #game-frame { width: 100%; height: 100%; border: none; }
+        .game-top-bar { background: #111; padding: 10px; display: flex; justify-content: space-between; align-items: center; color: white; }
+    </style>
+</head>
+<body>
+
+    <!-- 1. Welcome Screen (Name & 6-Digit Password Login) -->
+    <div id="welcome-screen">
+        <h1>Welcome to AIT Store</h1>
+        <p>ലോഗിൻ ചെയ്യാൻ വിവരങ്ങൾ നൽകുക</p>
+        
+        <div class="form-box">
+            <select id="lang-select" class="select-field">
+                <option value="ml">Malayalam (മലയാളം)</option>
+                <option value="en">English</option>
+            </select>
+
+            <input type="text" id="user-name-input" class="input-field" placeholder="പേര് (Name)...">
+            <input type="password" id="user-pass-input" class="input-field" maxlength="6" placeholder="6 അക്ക പാസ്‌വേഡ് (PIN)...">
+            
+            <button class="action-btn" onclick="completeLogin()">തുടങ്ങാം / Continue</button>
+        </div>
+    </div>
+
+    <!-- Main Header -->
+    <header>
+        <div class="logo">AIT <span>PLAY</span></div>
+        <div class="header-right">
+            <input type="text" class="search-box" placeholder="Search...">
+            <button class="icon-btn" onclick="openModal('settings-modal')">⚙️</button>
+            <button class="icon-btn" onclick="openModal('account-modal')">👤</button>
+        </div>
+    </header>
+
+    <!-- Banner -->
+    <div class="hero">
+        <h1 id="welcome-title">AIT Store-ലേക്ക് സ്വാഗതം!</h1>
+        <p>അപ്‌ലോഡ് ചെയ്യുന്ന ഗെയിമുകൾ ഇവിടെ പ്ലേ ചെയ്യാം.</p>
+    </div>
+
+    <!-- Categories -->
+    <div class="categories">
+        <button class="cat-btn active">എല്ലാം (All)</button>
+        <button class="cat-btn">3D Games</button>
+        <button class="cat-btn">Scratch Games</button>
+        <button class="cat-btn">AI Tools</button>
+    </div>
+
+    <!-- App Section -->
+    <div class="section-header">
+        <span class="section-title">Uploaded Games</span>
+    </div>
+
+    <div class="app-grid" id="game-list">
+        <div class="no-games">
+            <p>നിലവിൽ ഗെയിമുകൾ ഒന്നും അപ്‌ലോഡ് ചെയ്തിട്ടില്ല.</p>
+            <p style="font-size: 0.8rem; margin-top: 5px; color: #475569;">Settings (⚙️) വഴി പുതിയ ഗെയിം കോഡ് അപ്‌ലോഡ് ചെയ്യാം.</p>
+        </div>
+    </div>
+
+    <!-- Account Modal -->
+    <div id="account-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>My Profile</h3>
+                <button class="close-btn" onclick="closeModal('account-modal')">✕</button>
+            </div>
+            <p style="margin-bottom: 8px;"><strong>പേര്:</strong> <span id="profile-name">-</span></p>
+            <p style="margin-bottom: 15px;"><strong>അക്കൗണ്ട് സ്റ്റാറ്റസ്:</strong> <span style="color: #22c55e;">Active</span></p>
+            <button class="action-btn" style="background: #ef4444; width: 100%;" onclick="logout()">Log Out</button>
+        </div>
+    </div>
+
+    <!-- Settings & Code Upload Modal -->
+    <div id="settings-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Settings & Upload</h3>
+                <button class="close-btn" onclick="closeModal('settings-modal')">✕</button>
+            </div>
+
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 6px; font-size: 0.85rem;">ഭാഷ തിരഞ്ഞെടുക്കുക (Language):</label>
+                <select class="select-field">
+                    <option>Malayalam (മലയാളം)</option>
+                    <option>English</option>
+                </select>
+            </div>
+
+            <hr style="border-color: #334155; margin: 15px 0;">
+
+            <h4 style="margin-bottom: 10px; color: #38bdf8;">🎮 Upload Game Code</h4>
+            <input type="text" id="g-title" class="input-field" placeholder="ഗെയിമിന്റെ പേര്" style="margin-bottom: 8px;">
+            <textarea id="g-code" class="input-field" rows="5" placeholder="ഗെയിമിന്റെ HTML/JS കോഡ് ഇവിടെ പേസ്റ്റ് ചെയ്യുക..."></textarea>
+            <button class="action-btn" style="width: 100%; margin-top: 8px; background: #22c55e;" onclick="uploadGameCode()">Publish Game</button>
+
+            <hr style="border-color: #334155; margin: 15px 0;">
+
+            <button class="action-btn" style="width: 100%; background: #64748b;" onclick="openAdminPanel()">🔑 Admin Panel</button>
+        </div>
+    </div>
+
+    <!-- Admin Panel Modal -->
+    <div id="admin-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Admin Panel</h3>
+                <button class="close-btn" onclick="closeModal('admin-modal')">✕</button>
+            </div>
+            <p style="font-size: 0.85rem; color: #94a3b8; margin-bottom: 10px;">അപ്‌ലോഡ് ചെയ്ത ഗെയിമുകൾ കൺട്രോൾ ചെയ്യാം</p>
+            <div id="admin-game-list"></div>
+        </div>
+    </div>
+
+    <!-- Game Player Modal -->
+    <div id="game-player-modal">
+        <div class="game-top-bar">
+            <span id="playing-game-title">Game Title</span>
+            <button onclick="closeGamePlayer()" style="background: #ef4444; color: white; border: none; padding: 5px 12px; border-radius: 6px; cursor: pointer;">Exit Game</button>
+        </div>
+        <iframe id="game-frame"></iframe>
+    </div>
+
+    <script>
+        let uploadedGames = [];
+
+        function completeLogin() {
+            let name = document.getElementById('user-name-input').value;
+            let pass = document.getElementById('user-pass-input').value;
+
+            if(!name) { alert("ദയവായി പേര് നൽകുക!"); return; }
+            if(pass.length !== 6) { alert("ദയവായി 6 അക്ക പാസ്‌വേഡ് നൽകുക!"); return; }
+
+            document.getElementById('profile-name').innerText = name;
+            document.getElementById('welcome-title').innerText = name + "-ന്റെ AIT Store";
+            document.getElementById('welcome-screen').style.display = 'none';
+        }
+
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+        function logout() {
+            closeModal('account-modal');
+            document.getElementById('welcome-screen').style.display = 'flex';
+        }
+
+        function uploadGameCode() {
+            let title = document.getElementById('g-title').value;
+            let code = document.getElementById('g-code').value;
+
+            if(!title || !code) { alert("പേരും ഗെയിം കോഡും കൃത്യമായി നൽകുക!"); return; }
+
+            let gameObj = { id: Date.now(), title: title, code: code };
+            uploadedGames.push(gameObj);
+
+            renderGames();
+            document.getElementById('g-title').value = '';
+            document.getElementById('g-code').value = '';
+            closeModal('settings-modal');
+            alert("ഗെയിം വിജയകരമായി അപ്‌ലോഡ് ചെയ്തു!");
+        }
+
+        function renderGames() {
+            let list = document.getElementById('game-list');
+            list.innerHTML = '';
+
+            if(uploadedGames.length === 0) {
+                list.innerHTML = `
+                    <div class="no-games">
+                        <p>നിലവിൽ ഗെയിമുകൾ ഒന്നും അപ്‌ലോഡ് ചെയ്തിട്ടില്ല.</p>
+                        <p style="font-size: 0.8rem; margin-top: 5px; color: #475569;">Settings (⚙️) വഴി പുതിയ ഗെയിം കോഡ് അപ്‌ലോഡ് ചെയ്യാം.</p>
+                    </div>`;
+                return;
+            }
+
+            uploadedGames.forEach(g => {
+                let card = document.createElement('div');
+                card.className = 'app-card';
+                card.innerHTML = `
+                    <div class="app-icon">🎮</div>
+                    <div class="app-details">
+                        <div class="app-title">${g.title}</div>
+                        <div style="font-size: 0.75rem; color: #94a3b8;">HTML5 Game</div>
+                    </div>
+                    <button class="play-btn" onclick="playGame(${g.id})">PLAY</button>
+                `;
+                list.appendChild(card);
+            });
+        }
+
+        function playGame(id) {
+            let g = uploadedGames.find(item => item.id === id);
+            if(g) {
+                document.getElementById('playing-game-title').innerText = g.title;
+                let frame = document.getElementById('game-frame');
+                frame.srcdoc = g.code;
+                document.getElementById('game-player-modal').style.display = 'flex';
+            }
+        }
+
+        function closeGamePlayer() {
+            document.getElementById('game-player-modal').style.display = 'none';
+            document.getElementById('game-frame').srcdoc = '';
+        }
+
+        function openAdminPanel() {
+            closeModal('settings-modal');
+            openModal('admin-modal');
+            let adminList = document.getElementById('admin-game-list');
+            adminList.innerHTML = '';
+
+            if(uploadedGames.length === 0) {
+                adminList.innerHTML = '<p style="color: #64748b;">ഗെയിമുകൾ ഒന്നുമില്ല.</p>';
+                return;
+            }
+
+            uploadedGames.forEach(g => {
+                let item = document.createElement('div');
+                item.style.cssText = "display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #334155;";
+                item.innerHTML = `
+                    <span>${g.title}</span>
+                    <button onclick="deleteGame(${g.id})" style="background: #ef4444; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer;">Delete</button>
+                `;
+                adminList.appendChild(item);
+            });
+        }
+
+        function deleteGame(id) {
+            uploadedGames = uploadedGames.filter(g => g.id !== id);
+            renderGames();
+            openAdminPanel();
+        }
+    </script>
+</body>
+</html>
