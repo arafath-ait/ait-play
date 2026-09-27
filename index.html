@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="ml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIT Games - Main Portal</title>
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+        body { background: #0f172a; color: #f8fafc; min-height: 100vh; padding-bottom: 40px; }
+        
+        header {
+            background: #1e293b; padding: 16px 24px; display: flex; justify-content: space-between;
+            align-items: center; border-bottom: 2px solid #8b5cf6; position: sticky; top: 0; z-index: 100;
+        }
+        .logo { font-size: 1.5rem; font-weight: 900; color: #38bdf8; text-decoration: none; }
+        .nav-btns { display: flex; gap: 10px; }
+        .btn {
+            padding: 8px 16px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer;
+            transition: 0.2s; text-decoration: none; display: inline-flex; align-items: center; justify-content: center;
+        }
+        .btn-primary { background: #8b5cf6; color: white; }
+        .btn-success { background: #10b981; color: white; }
+        .btn:hover { opacity: 0.9; transform: scale(0.98); }
+
+        .hero { text-align: center; padding: 30px 16px 10px; }
+        .hero h1 { font-size: 2rem; color: #38bdf8; margin-bottom: 8px; }
+        .search-bar {
+            width: 90%; max-width: 450px; padding: 12px; border-radius: 20px; border: 1px solid #8b5cf6;
+            background: #1e293b; color: white; outline: none; margin: 15px auto; display: block;
+        }
+
+        /* Game Cards Grid */
+        .games-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px; padding: 20px; max-width: 1200px; margin: 0 auto;
+        }
+        .game-card {
+            background: #1e293b; border-radius: 16px; overflow: hidden; border: 1px solid #334155;
+            transition: 0.3s; cursor: pointer; display: flex; flex-direction: column;
+        }
+        .game-card:hover { transform: translateY(-5px); border-color: #8b5cf6; }
+        .card-preview { height: 140px; background: #0f172a; display: flex; align-items: center; justify-content: center; font-size: 3rem; }
+        .card-body { padding: 15px; }
+        .card-title { font-size: 1.1rem; font-weight: bold; color: #38bdf8; margin-bottom: 6px; }
+        .card-desc { font-size: 0.85rem; color: #94a3b8; margin-bottom: 12px; }
+
+        /* Views (Pages inside main portal) */
+        .view-section { display: none; }
+        .view-section.active { display: block; }
+
+        /* Player & Modal */
+        #game-iframe { width: 100%; height: 80vh; border: none; border-radius: 12px; background: white; }
+        .form-container { max-width: 500px; margin: 30px auto; background: #1e293b; padding: 25px; border-radius: 16px; border: 1px solid #8b5cf6; }
+        .form-input { width: 100%; padding: 10px; margin-bottom: 15px; border-radius: 8px; border: 1px solid #475569; background: #0f172a; color: white; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="#" class="logo" onclick="showView('home')">🎮 AIT GAMES</a>
+        <div class="nav-btns">
+            <button class="btn btn-success" onclick="showView('publish')">🚀 Publish Game</button>
+            <a href="login.html" class="btn btn-primary" id="login-nav-btn">🔐 Login / Admin</a>
+        </div>
+    </header>
+
+    <!-- HOME PAGE VIEW -->
+    <div id="view-home" class="view-section active">
+        <div class="hero">
+            <h1>AIT ഗെയിമിംഗ് ലോകത്തേക്ക് സ്വാഗതം!</h1>
+            <p style="color:#cbd5e1;">ഉപയോക്താക്കൾ പബ്ലിഷ് ചെയ്ത ഗെയിമുകൾ കളിക്കൂ</p>
+            <input type="text" id="search-input" class="search-bar" placeholder="ഗെയിമുകൾ തിരയുക (Search games)..." oninput="filterGames()">
+        </div>
+        <div class="games-grid" id="games-container">
+            <p style="text-align:center; grid-column: 1/-1; color:#94a3b8;">ഗെയിമുകൾ ലോഡ് ചെയ്യുന്നു...</p>
+        </div>
+    </div>
+
+    <!-- GAME PLAY PAGE VIEW -->
+    <div id="view-play" class="view-section" style="padding: 20px; max-width:1000px; margin:0 auto;">
+        <button class="btn btn-primary" style="margin-bottom:15px;" onclick="showView('home')">⬅️ തിരികെ പോകുക (Back)</button>
+        <h2 id="play-title" style="color:#38bdf8; margin-bottom:10px;">Game Title</h2>
+        <iframe id="game-iframe"></iframe>
+    </div>
+
+    <!-- PUBLISH GAME VIEW -->
+    <div id="view-publish" class="view-section">
+        <div class="form-container">
+            <h2 style="color:#10b981; margin-bottom:15px; text-align:center;">🚀 പുതിയ ഗെയിം പബ്ലിഷ് ചെയ്യുക</h2>
+            <input type="text" id="pub-title" class="form-input" placeholder="ഗെയിമിന്റെ പേര് (Game Title)">
+            <input type="text" id="pub-desc" class="form-input" placeholder="ഗെയിമിന്റെ വിവരണം (Short Description)">
+            <textarea id="pub-code" class="form-input" style="height:150px;" placeholder="ഗെയിമിന്റെ ഒറ്റ HTML കോഡ് (Paste HTML Code here)..."></textarea>
+            <button class="btn btn-success" style="width:100%; padding:12px;" onclick="submitUserGame()">പബ്ലിഷ് ചെയ്യുക</button>
+        </div>
+    </div>
+
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCXMAdXRsyubfJFZRUoXYoYjBWjBZd7VxE",
+            authDomain: "ait-game-store.firebaseapp.com",
+            projectId: "ait-game-store",
+            databaseURL: "https://ait-game-store-default-rtdb.firebaseio.com"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        let allGames = {};
+
+        function showView(viewName) {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+            document.getElementById('view-' + viewName).classList.add('active');
+        }
+
+        // Fetch Games Realtime
+        db.ref('games').on('value', snap => {
+            allGames = snap.val() || {};
+            renderGames(allGames);
+        });
+
+        function renderGames(gamesObj) {
+            const container = document.getElementById('games-container');
+            container.innerHTML = '';
+            const keys = Object.keys(gamesObj);
+
+            if(keys.length === 0) {
+                container.innerHTML = '<p style="text-align:center; grid-column: 1/-1;">ഇതുവരെ ഗെയിമുകളൊന്നും പബ്ലിഷ് ചെയ്തിട്ടില്ല!</p>';
+                return;
+            }
+
+            keys.forEach(id => {
+                const g = gamesObj[id];
+                const card = document.createElement('div');
+                card.className = 'game-card';
+                card.onclick = () => playGame(id);
+                card.innerHTML = `
+                    <div class="card-preview">🎮</div>
+                    <div class="card-body">
+                        <div class="card-title">${g.title}</div>
+                        <div class="card-desc">${g.desc || 'No description available'}</div>
+                        <button class="btn btn-primary" style="width:100%;">കളിക്കുക (Play)</button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function playGame(id) {
+            const g = allGames[id];
+            if(!g) return;
+            document.getElementById('play-title').innerText = g.title;
+            const iframe = document.getElementById('game-iframe');
+            iframe.srcdoc = g.code;
+            showView('play');
+        }
+
+        function filterGames() {
+            const query = document.getElementById('search-input').value.toLowerCase();
+            const filtered = {};
+            Object.keys(allGames).forEach(id => {
+                if(allGames[id].title.toLowerCase().includes(query)) filtered[id] = allGames[id];
+            });
+            renderGames(filtered);
+        }
+
+        function submitUserGame() {
+            const title = document.getElementById('pub-title').value.trim();
+            const desc = document.getElementById('pub-desc').value.trim();
+            const code = document.getElementById('pub-code').value.trim();
+
+            if(!title || !code) {
+                alert("ദയവായി ഗെയിമിന്റെ പേരും HTML കോഡും നൽകുക!");
+                return;
+            }
+
+            db.ref('games').push({
+                title: title,
+                desc: desc,
+                code: code,
+                publishedAt: Date.now()
+            }, (err) => {
+                if(!err) {
+                    alert("ഗെയിം വിജയകരമായി പബ്ലിഷ് ചെയ്തു!");
+                    document.getElementById('pub-title').value = '';
+                    document.getElementById('pub-desc').value = '';
+                    document.getElementById('pub-code').value = '';
+                    showView('home');
+                }
+            });
+        }
+    </script>
+</body>
+</html>
