@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="ml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIT World Games - Main Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Manjari:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Manjari', sans-serif; }
+        .glass { background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(56, 189, 248, 0.2); }
+    </style>
+
+    <!-- Firebase CDN Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+</head>
+<body class="bg-slate-950 text-white min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="glass sticky top-0 z-40 px-4 py-3 border-b border-cyan-500/20">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="showPage('home')">
+                <span class="text-3xl">🎮</span>
+                <span class="text-xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">AIT World Games</span>
+            </div>
+
+            <div class="flex items-center space-x-3">
+                <button onclick="alert('📱 ആപ്പ് ഫോണിലേക്ക് ഇൻസ്റ്റാൾ ചെയ്യാനുള്ള ഓപ്ഷൻ സജ്ജീകരിച്ചു!')" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs sm:text-sm px-3 py-2 rounded-xl flex items-center space-x-1 font-bold transition">
+                    <span>📱</span> <span>ഫോണിലേക്ക് ആക്കുക</span>
+                </button>
+                
+                <div id="nav-user-area">
+                    <!-- Dynamic Login or Settings button -->
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container Pages -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6">
+
+        <!-- 1. HOME PAGE / GAMES GALLERY -->
+        <section id="page-home" class="space-y-6">
+            <div class="glass p-6 rounded-3xl bg-gradient-to-r from-cyan-950/40 via-slate-900 to-purple-950/40 border border-cyan-500/30 flex flex-col sm:flex-row justify-between items-center gap-4">
+                <div>
+                    <h1 class="text-2xl sm:text-3xl font-extrabold text-cyan-300 mb-2">സൗജന്യ ഗെയിമുകൾ കളിച്ച് ആസ്വദിക്കൂ! 🚀</h1>
+                    <p class="text-gray-300 text-sm">ഇഷ്ടമുള്ള ഗെയിമുകൾ ഓൺലൈനായി കളിക്കാം. അക്കൗണ്ട് സെറ്റിംഗ്സിൽ ഗെയിം പബ്ലിഷ് ചെയ്യാം.</p>
+                </div>
+                <button onclick="openSettings('publish')" class="whitespace-nowrap bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-bold px-5 py-3 rounded-2xl shadow-lg transition">
+                    ➕ ഗെയിം പബ്ലിഷ് ചെയ്യുക
+                </button>
+            </div>
+
+            <div>
+                <h2 class="text-xl font-bold text-slate-200 mb-4 flex items-center space-x-2">
+                    <span>🔥</span> <span>ട്രെൻഡിംഗ് ഗെയിമുകൾ</span>
+                </h2>
+                <div id="games-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+                    <!-- Dynamic Games List -->
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. SETTINGS & ACCOUNT PAGE (Only visible after login) -->
+        <section id="page-settings" class="hidden space-y-6">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-slate-800 pb-4">
+                <div>
+                    <h2 class="text-2xl font-bold text-cyan-300">⚙️ സെറ്റിംഗ്സ് & അക്കൗണ്ട്</h2>
+                    <p class="text-xs text-gray-400">നിങ്ങളുടെ വിവരങ്ങളും പബ്ലിഷ് ചെയ്ത ഗെയിമുകളും ലൈക്കുകളും കാണാം</p>
+                </div>
+
+                <!-- Settings Tabs -->
+                <div class="flex space-x-2 bg-slate-900 p-1.5 rounded-2xl border border-slate-800 text-xs font-bold">
+                    <button onclick="switchTab('account')" id="tab-btn-account" class="px-4 py-2 rounded-xl transition bg-cyan-500 text-slate-950">
+                        👤 അക്കൗണ്ട് വിവരങ്ങൾ
+                    </button>
+                    <button onclick="switchTab('mygames')" id="tab-btn-mygames" class="px-4 py-2 rounded-xl transition text-gray-400">
+                        🎮 എൻ്റെ ഗെയിമുകൾ
+                    </button>
+                    <button onclick="switchTab('publish')" id="tab-btn-publish" class="px-4 py-2 rounded-xl transition text-gray-400">
+                        📤 പബ്ലിഷ് ഗെയിം
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tab 1: Account Credentials -->
+            <div id="tab-content-account" class="glass p-6 rounded-3xl max-w-xl space-y-4">
+                <h3 class="text-lg font-bold text-cyan-400">🛡️ അക്കൗണ്ട് വിവരങ്ങൾ</h3>
+                <div class="space-y-3 bg-slate-900 p-4 rounded-2xl border border-slate-800 text-sm">
+                    <div class="flex justify-between items-center py-2 border-b border-slate-800">
+                        <span class="text-gray-400">ഇമെയിൽ / Username:</span>
+                        <span id="disp-email" class="font-bold text-cyan-300">-</span>
+                    </div>
+                    <div class="flex justify-between items-center py-2">
+                        <span class="text-gray-400">പാസ്‌വേഡ്:</span>
+                        <span id="disp-pass" class="font-bold text-amber-300">-</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 2: Published Games & Analytics -->
+            <div id="tab-content-mygames" class="hidden space-y-4">
+                <h3 class="text-lg font-bold text-cyan-400">📊 നിങ്ങൾ അപ്‌ലോഡ് ചെയ്ത ഗെയിമുകൾ</h3>
+                <div id="my-games-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- User Games dynamically rendered here -->
+                </div>
+            </div>
+
+            <!-- Tab 3: Publish Game Form (With HTML Code Option) -->
+            <div id="tab-content-publish" class="hidden glass p-6 rounded-3xl max-w-2xl space-y-4">
+                <h3 class="text-lg font-bold text-amber-400">🚀 പുതിയ ഗെയിം പബ്ലിഷ് ചെയ്യുക</h3>
+                <form onsubmit="handlePublishGame(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-300 mb-1">ഗെയിമിൻ്റെ പേര് (Game Name)</label>
+                        <input type="text" id="pub-title" required placeholder="ഉദാ: 3D കാർ റേസിംഗ്" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-cyan-400">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-300 mb-1">ഗെയിം എച്ച്.ടി.എം.എൽ കോഡ് (HTML Game Code)</label>
+                        <textarea id="pub-code" rows="5" required placeholder="<html>...നിങ്ങളുടെ HTML ഗെയിം കോഡ് ഇവിടെ പേസ്റ്റ് ചെയ്യുക...</html>" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm font-mono text-cyan-300 focus:outline-none focus:border-cyan-400"></textarea>
+                    </div>
+                    <button type="submit" class="w-full bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-bold py-3 rounded-xl shadow-lg transition">
+                        ഗെയിം പബ്ലിഷ് ചെയ്യുക ✨
+                    </button>
+                </form>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Game Player Modal -->
+    <div id="modal-player" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-2 sm:p-6 hidden">
+        <div class="glass w-full max-w-4xl h-[90vh] rounded-3xl flex flex-col overflow-hidden border border-cyan-500/40 relative">
+            <div class="p-4 bg-slate-900 border-b border-slate-800 flex justify-between items-center">
+                <div class="flex items-center space-x-3">
+                    <span class="text-2xl">🎮</span>
+                    <div>
+                        <h3 id="play-title" class="font-bold text-cyan-300">ഗെയിം</h3>
+                        <p id="play-author" class="text-xs text-gray-400">By Admin</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <button id="btn-like" onclick="likeGame()" class="bg-rose-500/20 hover:bg-rose-500/40 text-rose-300 text-xs px-3 py-2 rounded-xl flex items-center space-x-1 font-bold transition">
+                        <span>❤️</span> <span id="play-likes">0</span>
+                    </button>
+                    <button onclick="closePlayer()" class="w-8 h-8 bg-slate-800 rounded-full flex items-center justify-center text-gray-300">✕</button>
+                </div>
+            </div>
+            <!-- Live Iframe Game Display -->
+            <iframe id="game-frame" class="w-full flex-1 bg-white border-0"></iframe>
+        </div>
+    </div>
+
+    <script>
+        // =========================================================================
+        // 🔴 ഇവിടെ നിന്റെ ഫയർബേസ് സെർവർ കോഡ് നൽകുക (FIREBASE CONFIG SERVER CODE)
+        // =========================================================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyCXMAdXRsyubfJFZRUoXYoYjBWjBZd7VxE",
+            authDomain: "ait-game-store.firebaseapp.com",
+            projectId: "ait-game-store",
+            storageBucket: "ait-game-store.firebasestorage.app",
+            messagingSenderId: "146438462272",
+            appId: "1:146438462272:web:92a9cea7d1383f650d78a5"
+        };
+        // =========================================================================
+
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        let loggedUser = JSON.parse(localStorage.getItem('ait_user')) || null;
+        let currentGameId = null;
+        let allGamesData = {};
+
+        function init() {
+            updateNav();
+            loadGames();
+        }
+
+        function updateNav() {
+            const area = document.getElementById('nav-user-area');
+            if (loggedUser) {
+                area.innerHTML = `
+                    <button onclick="openSettings('account')" class="bg-slate-800 hover:bg-slate-700 border border-cyan-500/30 text-xs sm:text-sm px-3 py-2 rounded-xl transition">
+                        ⚙️ സെറ്റിംഗ്സ്
+                    </button>
+                    <button onclick="logout()" class="bg-rose-600 hover:bg-rose-500 text-xs px-2.5 py-2 rounded-xl transition">🚪 Logout</button>
+                `;
+            } else {
+                area.innerHTML = `
+                    <a href="admin.html" class="bg-cyan-500 hover:bg-cyan-400 text-slate-950 text-xs sm:text-sm px-4 py-2 rounded-xl font-bold transition">
+                        🔑 ലോഗിൻ ചെയ്യുക
+                    </a>
+                `;
+            }
+        }
+
+        function showPage(p) {
+            document.getElementById('page-home').classList.add('hidden');
+            document.getElementById('page-settings').classList.add('hidden');
+            document.getElementById(`page-${p}`).classList.remove('hidden');
+        }
+
+        function openSettings(tab) {
+            if (!loggedUser) {
+                alert("⚠️ സെറ്റിംഗ്സ് കാണാൻ ആദ്യം ലോഗിൻ ചെയ്യുക!");
+                window.location.href = "admin.html";
+                return;
+            }
+            showPage('settings');
+            switchTab(tab);
+            document.getElementById('disp-email').innerText = loggedUser.username;
+            document.getElementById('disp-pass').innerText = loggedUser.password;
+            renderMyGames();
+        }
+
+        function switchTab(t) {
+            ['account', 'mygames', 'publish'].forEach(tab => {
+                document.getElementById(`tab-content-${tab}`).classList.add('hidden');
+                document.getElementById(`tab-btn-${tab}`).className = "px-4 py-2 rounded-xl transition text-gray-400";
+            });
+            document.getElementById(`tab-content-${t}`).classList.remove('hidden');
+            document.getElementById(`tab-btn-${t}`).className = "px-4 py-2 rounded-xl transition bg-cyan-500 text-slate-950 font-bold";
+        }
+
+        function loadGames() {
+            database.ref('games').on('value', snapshot => {
+                allGamesData = snapshot.val() || {};
+                const grid = document.getElementById('games-grid');
+                grid.innerHTML = '';
+
+                Object.keys(allGamesData).forEach(id => {
+                    const g = allGamesData[id];
+                    grid.innerHTML += `
+                        <div class="glass p-5 rounded-3xl border border-slate-800 space-y-4">
+                            <div class="text-4xl">🎮</div>
+                            <h3 class="font-bold text-slate-100 text-lg">${g.title}</h3>
+                            <div class="pt-3 border-t border-slate-800 flex justify-between items-center text-xs text-gray-400">
+                                <span>👁️ ${g.views || 0} | ❤️ ${g.likes || 0}</span>
+                                <button onclick="playGame('${id}')" class="bg-cyan-500 text-slate-950 font-bold px-4 py-2 rounded-xl">കളിക്കുക ▶</button>
+                            </div>
+                        </div>
+                    `;
+                });
+            });
+        }
+
+        function playGame(id) {
+            const g = allGamesData[id];
+            if (!g) return;
+            currentGameId = id;
+
+            // Update View Count
+            database.ref(`games/${id}/views`).set((g.views || 0) + 1);
+
+            document.getElementById('play-title').innerText = g.title;
+            document.getElementById('play-author').innerText = `Uploaded by: ${g.author}`;
+            document.getElementById('play-likes').innerText = g.likes || 0;
+
+            const frame = document.getElementById('game-frame');
+            frame.srcdoc = g.code;
+
+            document.getElementById('modal-player').classList.remove('hidden');
+        }
+
+        function likeGame() {
+            if (!currentGameId) return;
+            const currentLikes = (allGamesData[currentGameId].likes || 0) + 1;
+            database.ref(`games/${currentGameId}/likes`).set(currentLikes);
+            document.getElementById('play-likes').innerText = currentLikes;
+            alert("❤️ ഗെയിം ലൈക്ക് ചെയ്തു!");
+        }
+
+        function closePlayer() {
+            document.getElementById('modal-player').classList.add('hidden');
+            document.getElementById('game-frame').srcdoc = "";
+        }
+
+        function handlePublishGame(e) {
+            e.preventDefault();
+            const title = document.getElementById('pub-title').value;
+            const code = document.getElementById('pub-code').value;
+
+            const newId = Date.now();
+            database.ref('games/' + newId).set({
+                id: newId,
+                title: title,
+                code: code,
+                author: loggedUser.username,
+                views: 1,
+                likes: 0
+            });
+
+            alert("🚀 ഗെയിം വിജയകരമായി പബ്ലിഷ് ചെയ്തു!");
+            document.getElementById('pub-title').value = '';
+            document.getElementById('pub-code').value = '';
+            switchTab('mygames');
+        }
+
+        function renderMyGames() {
+            const myGamesList = document.getElementById('my-games-list');
+            myGamesList.innerHTML = '';
+            let count = 0;
+
+            Object.keys(allGamesData).forEach(id => {
+                const g = allGamesData[id];
+                if (g.author === loggedUser.username) {
+                    count++;
+                    myGamesList.innerHTML += `
+                        <div class="p-4 bg-slate-900 rounded-2xl border border-slate-800 flex justify-between items-center">
+                            <div>
+                                <h4 class="font-bold text-cyan-300 text-sm">${g.title}</h4>
+                                <div class="text-xs text-gray-400 mt-1">👁️ ${g.views || 0} వ్యൂസ് | ❤️ ${g.likes || 0} ലൈക്കുകൾ</div>
+                            </div>
+                        </div>
+                    `;
+                }
+            });
+
+            if (count === 0) {
+                myGamesList.innerHTML = `<div class="col-span-2 text-center text-xs text-gray-400">നിങ്ങൾ ഗെയിമുകൾ ഒന്നും പബ്ലിഷ് ചെയ്തിട്ടില്ല.</div>`;
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('ait_user');
+            loggedUser = null;
+            updateNav();
+            showPage('home');
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>
