@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- Google Analytics Tag -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZCB4FLWWTK"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-ZCB4FLWWTK');
+  </script>
+
+  <!-- Google Search Console Verification Tag -->
+  <meta name="google-site-verification" content="BC72PoBTqX5w4xESU5r_xAYm2DoteZywncXXioMaHjA" />
+  
+  <title>AIT Play - Free Online Games</title>
+  <meta name="description" content="Play free online games on AIT Play. Created by AIT.">
+  <meta name="theme-color" content="#0f172a">
+
+  <!-- Website Favicon Logo -->
+  <link rel="icon" type="image/jpeg" href="https://raw.githubusercontent.com/arafath-ait/ait-play/main/IMG_3190.jpeg">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --bg-color: #0f172a;
+      --card-bg: #1e293b;
+      --text-color: #f8fafc;
+      --accent-color: #38bdf8;
+      --border-color: #334155;
+    }
+    body.light-theme {
+      --bg-color: #f1f5f9;
+      --card-bg: #ffffff;
+      --text-color: #0f172a;
+      --accent-color: #0284c7;
+      --border-color: #cbd5e1;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; transition: background 0.3s, color 0.3s; }
+    body { background-color: var(--bg-color); color: var(--text-color); min-height: 100vh; padding-bottom: 70px; }
+    
+    /* Intro Splash Screen Animation */
+    #splashScreen {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: var(--bg-color); display: flex; flex-direction: column;
+      justify-content: center; align-items: center; z-index: 9999;
+      animation: fadeOut 0.5s ease 1.5s forwards;
+    }
+    .splash-logo {
+      width: 80px; height: 80px; border-radius: 16px; object-fit: cover;
+      animation: zoomInLogo 1.2s ease forwards;
+      box-shadow: 0 0 20px rgba(56, 189, 248, 0.4);
+    }
+    @keyframes zoomInLogo {
+      0% { transform: scale(0.3); opacity: 0; }
+      50% { transform: scale(1.1); opacity: 1; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    @keyframes fadeOut {
+      to { opacity: 0; visibility: hidden; }
+    }
+
+    header {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 12px 20px; background: var(--card-bg); border-bottom: 2px solid var(--border-color);
+      position: sticky; top: 0; z-index: 100;
+    }
+    .logo-container { display: flex; align-items: center; gap: 10px; cursor: pointer; user-select: none; }
+    .logo-img { width: 42px; height: 42px; border-radius: 8px; object-fit: cover; }
+    .logo-text { font-size: 22px; font-weight: 800; color: var(--accent-color); letter-spacing: 0.5px; }
+    
+    .header-actions { display: flex; align-items: center; gap: 8px; }
+    .bulb-btn { font-size: 18px; cursor: pointer; background: none; border: none; color: #94a3b8; padding: 5px; }
+    .bulb-btn.active { color: #facc15; filter: drop-shadow(0 0 8px #facc15); }
+    
+    /* Music Small Button Style */
+    .music-btn {
+      background: var(--border-color);
+      color: var(--text-color);
+      border: 1px solid var(--border-color);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      user-select: none;
+    }
+    .music-btn.playing {
+      background: #0284c7;
+      color: #fff;
+      border-color: #38bdf8;
+      box-shadow: 0 0 8px rgba(56, 189, 248, 0.5);
+    }
+
+    /* Visitor Counter Tag */
+    .visitor-badge {
+      font-size: 11px; font-weight: bold; background: rgba(56, 189, 248, 0.15);
+      color: var(--accent-color); padding: 4px 8px; border-radius: 12px; border: 1px solid var(--border-color);
+    }
+
+    /* Spotify Style Playlist Popup Modal */
+    .playlist-modal {
+      display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.7); justify-content: center; align-items: center; z-index: 1000;
+    }
+    .playlist-content {
+      background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px;
+      width: 90%; max-width: 380px; padding: 20px; max-height: 70vh; overflow-y: auto; position: relative;
+    }
+    .playlist-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 15px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px;
+    }
+    .playlist-header h3 { color: var(--accent-color); font-size: 18px; }
+    .song-item {
+      padding: 12px; background: var(--bg-color); border: 1px solid var(--border-color);
+      border-radius: 8px; margin-bottom: 8px; cursor: pointer; display: flex;
+      justify-content: space-between; align-items: center; font-size: 14px; font-weight: 600;
+    }
+    .song-item:hover { border-color: var(--accent-color); background: rgba(56, 189, 248, 0.05); }
+    .song-item.active-song { border-color: #22c55e; color: #22c55e; }
+
+    .req-btn { background: #22c55e; color: #fff; border: none; padding: 8px 14px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 13px; }
+    
+    .controls-container { max-width: 800px; margin: 20px auto; padding: 0 15px; display: flex; gap: 10px; align-items: center; }
+    .search-box { flex: 1; padding: 12px 18px; border-radius: 25px; border: 2px solid var(--border-color); background: var(--card-bg); color: var(--text-color); font-size: 16px; outline: none; }
+    .random-btn {
+      background: var(--card-bg); border: 2px solid var(--border-color); color: var(--accent-color);
+      width: 48px; height: 48px; border-radius: 50%; font-size: 18px; cursor: pointer;
+      display: flex; justify-content: center; align-items: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    .random-btn:hover { background: var(--accent-color); color: #fff; }
+    
+    .games-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; max-width: 1000px; margin: 20px auto; padding: 0 15px; }
+    
+    .game-card { 
+      background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; 
+      padding: 15px; text-align: center; display: flex; flex-direction: column; align-items: center; 
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1); position: relative;
+    }
+    .menu-dots {
+      position: absolute; top: 10px; right: 12px; cursor: pointer; font-size: 18px;
+      color: var(--text-color); padding: 4px 8px; border-radius: 50%; opacity: 0.8;
+    }
+    .menu-dots:hover { opacity: 1; background: rgba(255,255,255,0.1); }
+
+    .dropdown-menu {
+      display: none; position: absolute; top: 35px; right: 10px; background: var(--card-bg);
+      border: 1px solid var(--border-color); border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      z-index: 50; width: 140px; overflow: hidden; text-align: left;
+    }
+    .dropdown-menu.show { display: block; }
+    .dropdown-item {
+      padding: 10px 12px; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 8px; color: var(--text-color);
+    }
+    .dropdown-item:hover { background: var(--border-color); }
+
+    .game-icon {
+      width: 60px; height: 60px; background: var(--accent-color); border-radius: 14px;
+      display: flex; justify-content: center; align-items: center; font-size: 28px; color: #fff; margin: 10px 0;
+      box-shadow: 0 4px 10px rgba(56, 189, 248, 0.3);
+    }
+    .game-title { font-weight: bold; margin-bottom: 8px; font-size: 15px; word-break: break-word; }
+    
+    /* Like Button Styling */
+    .like-section { display: flex; align-items: center; gap: 6px; margin-bottom: 10px; font-size: 13px; font-weight: bold; }
+    .like-btn { background: none; border: none; color: #ef4444; font-size: 18px; cursor: pointer; padding: 2px; }
+    .like-btn:active { transform: scale(1.3); }
+
+    .play-btn { background: var(--accent-color); color: #fff; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; }
+    
+    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); justify-content: center; align-items: center; z-index: 1000; }
+    .modal-content { background: var(--card-bg); padding: 25px; border-radius: 12px; width: 90%; max-width: 400px; position: relative; }
+    .game-player-content { background: var(--card-bg); width: 95%; height: 90vh; max-width: 800px; border-radius: 12px; position: relative; display: flex; flex-direction: column; overflow: hidden; }
+    .close-btn { position: absolute; right: 15px; top: 10px; font-size: 24px; cursor: pointer; color: var(--text-color); z-index: 10; }
+    .modal-content input, .modal-content textarea { width: 100%; margin: 10px 0; padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-color); color: var(--text-color); }
+    #gameFrame { width: 100%; height: 100%; border: none; background: #ffffff; }
+
+    /* Loading Spinner Animation */
+    .loading-container {
+      display: flex; flex-direction: column; justify-content: center; align-items: center;
+      grid-column: 1 / -1; padding: 40px; color: #94a3b8; font-size: 14px; gap: 10px;
+    }
+    .spinner {
+      width: 40px; height: 40px; border: 4px solid var(--border-color);
+      border-top: 4px solid var(--accent-color); border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Offline No Internet Screen */
+    #offlineScreen {
+      display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: var(--bg-color); z-index: 99999; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 20px;
+    }
+    #offlineScreen h1 { color: #ef4444; font-size: 24px; margin-bottom: 10px; }
+    #offlineScreen p { color: var(--text-color); margin-bottom: 20px; font-size: 14px; }
+    .dino-game-box { width: 100%; max-width: 600px; height: 250px; border: 2px dashed var(--border-color); border-radius: 12px; background: #fff; display: flex; justify-content: center; align-items: center; overflow: hidden; position: relative; }
+
+    /* WhatsApp Floating Button */
+    .whatsapp-btn {
+      position: fixed; bottom: 20px; right: 20px; background-color: #25d366; color: #fff;
+      border-radius: 50%; width: 55px; height: 55px; display: flex; justify-content: center; align-items: center;
+      font-size: 30px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); z-index: 999; text-decoration: none;
+    }
+    .whatsapp-btn:hover { transform: scale(1.1); }
+  </style>
+</head>
+<body>
+
+  <!-- Starting Intro Splash Screen Animation -->
+  <div id="splashScreen">
+    <img src="https://raw.githubusercontent.com/arafath-ait/ait-play/main/IMG_3190.jpeg" alt="Logo" class="splash-logo">
+  </div>
+
+  <!-- Offline Screen (No Internet Dino Game) -->
+  <div id="offlineScreen">
+    <h1>No Internet Connection</h1>
+    <p>Please check your network. Play this mini game while offline!</p>
+    <div class="dino-game-box">
+      <iframe src="https://chromedino.com/" style="width: 100%; height: 100%; border: none;"></iframe>
+    </div>
+  </div>
+
+  <header>
+    <div class="logo-container" id="adminLogo">
+      <img src="https://raw.githubusercontent.com/arafath-ait/ait-play/main/IMG_3190.jpeg" alt="AIT PLAY Logo" class="logo-img">
+      <span class="logo-text">AIT PLAY</span>
+    </div>
+    <div class="header-actions">
+      <div class="visitor-badge" id="visitorCount">Views: ...</div>
+      <button class="bulb-btn" id="themeBtn" title="Toggle Theme"><i class="fa-solid fa-lightbulb"></i></button>
+      
+      <!-- Music Button -->
+      <button class="music-btn" id="musicToggleBtn" title="Play/Pause or Long Press for Playlist">
+        <i class="fa-solid fa-music"></i> <span id="currentSongTitle">Music</span>
+      </button>
+
+      <button class="req-btn" id="openReqModal">+ Idea</button>
+    </div>
+  </header>
+
+  <!-- Playlist Popup Modal -->
+  <div class="playlist-modal" id="playlistModal">
+    <div class="playlist-content">
+      <div class="playlist-header">
+        <h3>Music Playlist</h3>
+        <span class="close-btn" id="closePlaylistModal" style="position:static; font-size:20px;">&times;</span>
+      </div>
+      <div id="playlistContainer">
+        <div class="loading-container"><div class="spinner"></div>Loading playlist...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Background Music Audio Element -->
+  <audio id="bgMusic"></audio>
+
+  <div class="controls-container">
+    <input type="text" class="search-box" id="searchBox" placeholder="Search Games...">
+    <button class="random-btn" id="randomGameBtn" title="Play Random Game">
+      <i class="fa-solid fa-dice"></i>
+    </button>
+  </div>
+
+  <main class="games-grid" id="gamesContainer">
+    <div class="loading-container">
+      <div class="spinner"></div>
+      Loading games...
+    </div>
+  </main>
+
+  <!-- Request Modal -->
+  <div class="modal" id="reqModal">
+    <div class="modal-content">
+      <span class="close-btn" id="closeReqModal">&times;</span>
+      <h3>Request A Game Idea</h3>
+      <input type="text" id="reqName" placeholder="Your Name">
+      <textarea id="reqIdea" rows="4" placeholder="Describe the game idea..."></textarea>
+      <button class="req-btn" style="width: 100%;" id="submitReq">Submit Idea</button>
+    </div>
+  </div>
+
+  <!-- Game Player Modal -->
+  <div class="modal" id="gameModal">
+    <div class="game-player-content">
+      <span class="close-btn" id="closeGameModal">&times;</span>
+      <iframe id="gameFrame" src="about:blank"></iframe>
+    </div>
+  </div>
+
+  <!-- WhatsApp Floating Icon -->
+  <a href="https://wa.me/917558961843" target="_blank" class="whatsapp-btn" title="Contact on WhatsApp">
+    <i class="fa-brands fa-whatsapp"></i>
+  </a>
+
+  <!-- Firebase Scripts -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCXMAdXRsyubfJFZRUoXYoYjBWjBZd7VxE",
+      authDomain: "ait-game-store.firebaseapp.com",
+      projectId: "ait-game-store",
+      storageBucket: "ait-game-store.firebasestorage.app",
+      messagingSenderId: "146438462272",
+      appId: "1:146438462272:web:92a9cea7d1383f650d78a5"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    // Offline Status Monitor
+    const offlineScreen = document.getElementById('offlineScreen');
+    function updateOnlineStatus() {
+      if (navigator.onLine) {
+        offlineScreen.style.display = 'none';
+      } else {
+        offlineScreen.style.display = 'flex';
+      }
+    }
+    window.addEventListener('online', updateOnlineStatus);
+    window.addEventListener('offline', updateOnlineStatus);
+    updateOnlineStatus();
+
+    // Auto Dark/Light Mode
+    const themeBtn = document.getElementById('themeBtn');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+    
+    function setTheme(isLight) {
+      if (isLight) {
+        document.body.classList.add('light-theme');
+        themeBtn.classList.remove('active');
+      } else {
+        document.body.classList.remove('light-theme');
+        themeBtn.classList.add('active');
+      }
+    }
+    setTheme(!prefersDark.matches);
+
+    themeBtn.addEventListener('click', () => {
+      document.body.classList.toggle('light-theme');
+      themeBtn.classList.toggle('active');
+    });
+
+    // Live Visitor Counter Logic
+    const visitorCountEl = document.getElementById('visitorCount');
+    const visitorRef = db.collection("stats").doc("visitors");
+    visitorRef.get().then((doc) => {
+      let count = doc.exists ? (doc.data().count || 100) + 1 : 150;
+      visitorRef.set({ count: count }, { merge: true });
+      visitorCountEl.innerText = `Views: ${count}`;
+    }).catch(() => {
+      visitorCountEl.innerText = `Views: 1.2k`;
+    });
+
+    // Dynamic Playlist & Music Player Logic
+    const bgMusic = document.getElementById('bgMusic');
+    const musicToggleBtn = document.getElementById('musicToggleBtn');
+    const currentSongTitle = document.getElementById('currentSongTitle');
+    const playlistModal = document.getElementById('playlistModal');
+    const playlistContainer = document.getElementById('playlistContainer');
+    
+    let playlist = [];
+    let currentSongIndex = 0;
+    let isMusicPlaying = false;
+    bgMusic.volume = 0.8;
+
+    db.collection("bg_music").orderBy("timestamp", "desc").onSnapshot((snapshot) => {
+      playlist = [];
+      snapshot.forEach((doc) => {
+        playlist.push(doc.data());
+      });
+      if (playlist.length > 0 && !bgMusic.src) {
+        loadSong(0);
+      } else if (playlist.length === 0) {
+        currentSongTitle.innerText = "Music";
+      }
+    });
+
+    function loadSong(index) {
+      if (playlist.length === 0) return;
+      currentSongIndex = index;
+      bgMusic.src = playlist[index].url;
+      currentSongTitle.innerText = playlist[index].name;
+      bgMusic.load();
+    }
+
+    bgMusic.addEventListener('ended', () => {
+      if (playlist.length > 0) {
+        currentSongIndex = (currentSongIndex + 1) % playlist.length;
+        loadSong(currentSongIndex);
+        if (isMusicPlaying) bgMusic.play();
+      }
+    });
+
+    musicToggleBtn.addEventListener('click', () => {
+      if (playlist.length === 0) {
+        alert("No music uploaded in admin panel yet!");
+        return;
+      }
+      if (isMusicPlaying) {
+        bgMusic.pause();
+        musicToggleBtn.classList.remove('playing');
+        isMusicPlaying = false;
+      } else {
+        bgMusic.play().then(() => {
+          musicToggleBtn.classList.add('playing');
+          isMusicPlaying = true;
+        }).catch(() => {
+          alert("Click again to play music!");
+        });
+      }
+    });
+
+    document.body.addEventListener('click', function initAudio() {
+      if (!isMusicPlaying && playlist.length > 0 && bgMusic.paused) {
+        bgMusic.play().then(() => {
+          musicToggleBtn.classList.add('playing');
+          isMusicPlaying = true;
+        }).catch(() => {});
+      }
+    }, { once: true });
+
+    let musicPressTimer;
+    musicToggleBtn.addEventListener('touchstart', startMusicPress);
+    musicToggleBtn.addEventListener('mousedown', startMusicPress);
+    musicToggleBtn.addEventListener('touchend', cancelMusicPress);
+    musicToggleBtn.addEventListener('mouseup', cancelMusicPress);
+
+    function startMusicPress(e) {
+      musicPressTimer = setTimeout(() => {
+        e.preventDefault();
+        openPlaylistModal();
+      }, 600);
+    }
+    function cancelMusicPress() { clearTimeout(musicPressTimer); }
+
+    function openPlaylistModal() {
+      playlistContainer.innerHTML = '<div class="loading-container"><div class="spinner"></div>Loading playlist...</div>';
+      if (playlist.length === 0) {
+        playlistContainer.innerHTML = "<p style='text-align:center; padding:20px;'>No music found!</p>";
+      } else {
+        playlistContainer.innerHTML = '';
+        playlist.forEach((song, idx) => {
+          const item = document.createElement('div');
+          item.className = `song-item ${idx === currentSongIndex ? 'active-song' : ''}`;
+          item.innerHTML = `<span>${song.name}</span> <i class="fa-solid fa-play"></i>`;
+          item.onclick = () => {
+            loadSong(idx);
+            bgMusic.play().then(() => {
+              musicToggleBtn.classList.add('playing');
+              isMusicPlaying = true;
+            });
+            playlistModal.style.display = 'none';
+          };
+          playlistContainer.appendChild(item);
+        });
+      }
+      playlistModal.style.display = 'flex';
+    }
+
+    document.getElementById('closePlaylistModal').onclick = () => {
+      playlistModal.style.display = 'none';
+    };
+
+    // Admin Navigation (Long Press Logo for 3s)
+    const adminLogo = document.getElementById('adminLogo');
+    let pressTimer;
+    adminLogo.addEventListener('touchstart', startPress);
+    adminLogo.addEventListener('mousedown', startPress);
+    adminLogo.addEventListener('touchend', cancelPress);
+    adminLogo.addEventListener('mouseup', cancelPress);
+
+    function startPress() {
+      pressTimer = setTimeout(() => {
+        window.location.href = "https://arafath-ait.github.io/login-website/";
+      }, 3000);
+    }
+    function cancelPress() { clearTimeout(pressTimer); }
+
+    // Request Modal Logic
+    const reqModal = document.getElementById('reqModal');
+    const submitReqBtn = document.getElementById('submitReq');
+
+    document.getElementById('openReqModal').onclick = () => reqModal.style.display = 'flex';
+    document.getElementById('closeReqModal').onclick = () => reqModal.style.display = 'none';
+
+    submitReqBtn.onclick = () => {
+      const name = document.getElementById('reqName').value.trim();
+      const idea = document.getElementById('reqIdea').value.trim();
+
+      if(name && idea) {
+        submitReqBtn.innerText = "Submitting...";
+        submitReqBtn.disabled = true;
+
+        db.collection("requests").add({
+          name: name,
+          idea: idea,
+          timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        }).then(() => {
+          alert("Successfully Requested!");
+          reqModal.style.display = 'none';
+          document.getElementById('reqName').value = '';
+          document.getElementById('reqIdea').value = '';
+        }).catch(() => {
+          alert("Error sending request!");
+        }).finally(() => {
+          submitReqBtn.innerText = "Submit Idea";
+          submitReqBtn.disabled = false;
+        });
+      } else {
+        alert("Please fill all fields!");
+      }
+    };
+
+    document.addEventListener('click', (e) => {
+      if(!e.target.classList.contains('menu-dots')) {
+        document.querySelectorAll('.dropdown-menu').forEach(menu => menu.classList.remove('show'));
+      }
+    });
+
+    function toggleMenu(event, id) {
+      event.stopPropagation();
+      document.querySelectorAll('.dropdown-menu').forEach(menu => {
+        if(menu.id !== `menu-${id}`) menu.classList.remove('show');
+      });
+      const currentMenu = document.getElementById(`menu-${id}`);
+      if(currentMenu) currentMenu.classList.toggle('show');
+    }
+
+    function copyGameCode(id, title) {
+      const selectedGame = gamesList.find(g => g.id === id);
+      if (selectedGame && selectedGame.code) {
+        navigator.clipboard.writeText(selectedGame.code).then(() => {
+          alert(`Code for "${title}" copied!`);
+        });
+      }
+    }
+
+    function shareGame(title, id) {
+      const shareUrl = window.location.href;
+      if (navigator.share) {
+        navigator.share({ title: title, text: `Check out ${title} on AIT Play!`, url: shareUrl }).catch(() => {});
+      } else {
+        navigator.clipboard.writeText(shareUrl);
+        alert(`Link for "${title}" copied!`);
+      }
+    }
+
+    // Like Game System
+    function likeGame(id, event) {
+      event.stopPropagation();
+      const gameRef = db.collection("published_games").doc(id);
+      db.runTransaction((transaction) => {
+        return transaction.get(gameRef).then((doc) => {
+          if (!doc.exists) return;
+          let newLikes = (doc.data().likes || 0) + 1;
+          transaction.update(gameRef, { likes: newLikes });
+        });
+      }).catch(() => {});
+    }
+
+    // Random Game Selector
+    document.getElementById('randomGameBtn').onclick = () => {
+      if (gamesList.length === 0) {
+        alert("No games available!");
+        return;
+      }
+      const randomIndex = Math.floor(Math.random() * gamesList.length);
+      openGame(gamesList[randomIndex].id);
+    };
+
+    // Fetch Published Games with Loading Spinner
+    const gamesContainer = document.getElementById('gamesContainer');
+    let gamesList = [];
+
+    db.collection("published_games").orderBy("timestamp", "desc").onSnapshot((snapshot) => {
+      gamesContainer.innerHTML = '';
+      gamesList = [];
+      
+      if (snapshot.empty) {
+        gamesContainer.innerHTML = "<p style='grid-column: 1/-1; text-align:center; padding:30px; color:#94a3b8;'>No games found!</p>";
+        return;
+      }
+
+      snapshot.forEach((doc) => {
+        const game = doc.data();
+        game.id = doc.id;
+        gamesList.push(game);
+
+        const likesCount = game.likes || 0;
+        const gameCard = document.createElement('div');
+        gameCard.className = 'game-card';
+        gameCard.innerHTML = `
+          <div class="menu-dots" onclick="toggleMenu(event, '${doc.id}')"><i class="fa-solid fa-ellipsis-vertical"></i></div>
+          <div class="dropdown-menu" id="menu-${doc.id}">
+            <div class="dropdown-item" onclick="shareGame('${game.title}', '${doc.id}')">
+              <i class="fa-solid fa-share-nodes"></i> Share Game
+            </div>
+            <div class="dropdown-item" onclick="copyGameCode('${doc.id}', '${game.title}')">
+              <i class="fa-solid fa-code"></i> Copy Code
+            </div>
+          </div>
+          <div class="game-icon"><i class="fa-solid fa-gamepad"></i></div>
+          <div class="game-title">${game.title}</div>
+          <div class="like-section">
+            <button class="like-btn" onclick="likeGame('${doc.id}', event)"><i class="fa-solid fa-heart"></i></button>
+            <span>${likesCount}</span>
+          </div>
+          <button class="play-btn" onclick="openGame('${doc.id}')">Play Now</button>
+        `;
+        gamesContainer.appendChild(gameCard);
+      });
+    });
+
+    // Filter Search
+    document.getElementById('searchBox').addEventListener('input', (e) => {
+      const query = e.target.value.toLowerCase();
+      document.querySelectorAll('.game-card').forEach(card => {
+        const title = card.querySelector('.game-title').innerText.toLowerCase();
+        card.style.display = title.includes(query) ? 'flex' : 'none';
+      });
+    });
+
+    // Game Player Modal Controls with Dynamic Volume Adjustment
+    const gameModal = document.getElementById('gameModal');
+    const gameFrame = document.getElementById('gameFrame');
+    
+    document.getElementById('closeGameModal').onclick = () => {
+      gameModal.style.display = 'none';
+      gameFrame.src = 'about:blank';
+      bgMusic.volume = 0.8;
+    };
+
+    function openGame(id) {
+      const selectedGame = gamesList.find(g => g.id === id);
+      if(selectedGame) {
+        bgMusic.volume = 0.15;
+        gameModal.style.display = 'flex';
+        const doc = gameFrame.contentWindow.document;
+        doc.open();
+        doc.write(selectedGame.code);
+        doc.close();
+      }
+    }
+  </script>
+</body>
+</html>
