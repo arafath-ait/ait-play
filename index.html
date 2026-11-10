@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- Google Analytics Tag -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZCB4FLWWTK"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-ZCB4FLWWTK');
+  </script>
+
+  <!-- Google Search Console Verification Tag -->
+  <meta name="google-site-verification" content="BC72PoBTqX5w4xESU5r_xAYm2DoteZywncXXioMaHjA" />
+  
+  <title>AIT Play - Free Online Games</title>
+  <meta name="description" content="Play free online games on AIT Play. Created by AIT.">
+  <meta name="theme-color" content="#0f172a">
+
+  <!-- Website Favicon Logo -->
+  <link rel="icon" type="image/jpeg" href="https://raw.githubusercontent.com/arafath-ait/ait-play/main/IMG_3190.jpeg">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --bg-color: #0f172a;
+      --card-bg: #1e293b;
+      --text-color: #f8fafc;
+      --accent-color: #38bdf8;
+      --border-color: #334155;
+    }
+    body.light-theme {
+      --bg-color: #f1f5f9;
+      --card-bg: #ffffff;
+      --text-color: #0f172a;
+      --accent-color: #0284c7;
+      --border-color: #cbd5e1;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; transition: background 0.3s, color 0.3s; }
+    body { background-color: var(--bg-color); color: var(--text-color); min-height: 100vh; padding-bottom: 70px; }
+    
+    /* Intro Splash Screen Animation */
+    #splashScreen {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: var(--bg-color); display: flex; flex-direction: column;
+      justify-content: center; align-items: center; z-index: 9999;
+      animation: fadeOut 0.5s ease 1.5s forwards;
+    }
+    .splash-logo {
+      width: 80px; height: 80px; border-radius: 16px; object-fit: cover;
+      animation: zoomInLogo 1.2s ease forwards;
+      box-shadow: 0 0 20px rgba(56, 189, 248, 0.4);
+    }
+    @keyframes zoomInLogo {
+      0% { transform: scale(0.3); opacity: 0; }
+      50% { transform: scale(1.1); opacity: 1; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    @keyframes fadeOut {
+      to { opacity: 0; visibility: hidden; }
+    }
+
+    header {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 12px 20px; background: var(--card-bg); border-bottom: 2px solid var(--border-color);
+      position: sticky; top: 0; z-index: 100;
+    }
+    .logo-container { display: flex; align-items: center; gap: 10px; cursor: pointer; user-select: none; }
+    .logo-img { width: 42px; height: 42px; border-radius: 8px; object-fit: cover; }
+    .logo-text { font-size: 22px; font-weight: 800; color: var(--accent-color); letter-spacing: 0.5px; }
+    
+    .header-actions { display: flex; align-items: center; gap: 8px; }
+    .bulb-btn { font-size: 18px; cursor: pointer; background: none; border: none; color: #94a3b8; padding: 5px; }
+    .bulb-btn.active { color: #facc15; filter: drop-shadow(0 0 8px #facc15); }
+    
+    /* Visitor Counter Tag */
+    .visitor-badge {
+      font-size: 11px; font-weight: bold; background: rgba(56, 189, 248, 0.15);
+      color: var(--accent-color); padding: 4px 8px; border-radius: 12px; border: 1px solid var(--border-color);
+    }
+
+    .req-btn { background: #22c55e; color: #fff; border: none; padding: 8px 14px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 13px; }
+    .login-nav-btn { background: #38bdf8; color: #0f172a; border: none; padding: 8px 14px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 13px; }
+    .download-nav-btn { background: #a855f7; color: #fff; border: none; padding: 8px 14px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 13px; display: flex; align-items: center; gap: 5px; }
+
+    .controls-container { max-width: 800px; margin: 20px auto; padding: 0 15px; display: flex; gap: 10px; align-items: center; }
+    .search-box { flex: 1; padding: 12px 18px; border-radius: 25px; border: 2px solid var(--border-color); background: var(--card-bg); color: var(--text-color); font-size: 16px; outline: none; }
+    .random-btn {
+      background: var(--card-bg); border: 2px solid var(--border-color); color: var(--accent-color);
+      width: 48px; height: 48px; border-radius: 50%; font-size: 18px; cursor: pointer;
+      display: flex; justify-content: center; align-items: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    .random-btn:hover { background: var(--accent-color); color: #fff; }
+    
+    .games-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; max-width: 1000px; margin: 20px auto; padding: 0 15px; }
+    
+    .game-card { 
+      background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; 
+      padding: 15px; text-align: center; display: flex; flex-direction: column; align-items: center; 
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1); position: relative;
+    }
+    
+    /* Star Game Glowing Effect */
+    .game-card.star-game {
+      border: 2px solid #f59e0b;
+      box-shadow: 0 0 15px rgba(245, 158, 11, 0.5), inset 0 0 10px rgba(245, 158, 11, 0.2);
+    }
+    .star-badge {
+      position: absolute; top: 10px; left: 12px; color: #f59e0b; font-size: 16px;
+      filter: drop-shadow(0 0 4px rgba(245, 158, 11, 0.8));
+    }
+
+    .menu-dots {
+      position: absolute; top: 10px; right: 12px; cursor: pointer; font-size: 18px;
+      color: var(--text-color); padding: 4px 8px; border-radius: 50%; opacity: 0.8;
+    }
+    .menu-dots:hover { opacity: 1; background: rgba(255,255,255,0.1); }
+
+    .dropdown-menu {
+      display: none; position: absolute; top: 35px; right: 10px; background: var(--card-bg);
+      border: 1px solid var(--border-color); border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      z-index: 50; width: 160px; overflow: hidden; text-align: left;
+    }
+    .dropdown-menu.show { display: block; }
+    .dropdown-item {
+      padding: 10px 12px; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 8px; color: var(--text-color);
+    }
+    .dropdown-item:hover { background: var(--border-color); }
+
+    .game-icon {
+      width: 60px; height: 60px; background: var(--accent-color); border-radius: 14px;
+      display: flex; justify-content: center; align-items: center; font-size: 28px; color: #fff; margin: 10px 0;
+      box-shadow: 0 4px 10px rgba(56, 189, 248, 0.3);
+    }
+    .game-title { font-weight: bold; margin-bottom: 12px; font-size: 15px; word-break: break-word; }
+    .play-btn { background: var(--accent-color); color: #fff; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; }
+    
+    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); justify-content: center; align-items: center; z-index: 1000; }
+    .modal-content { background: var(--card-bg); padding: 25px; border-radius: 12px; width: 90%; max-width: 400px; position: relative; }
+    .game-player-content { background: var(--card-bg); width: 95%; height: 90vh; max-width: 800px; border-radius: 12px; position: relative; display: flex; flex-direction: column; overflow: hidden; }
+    .close-btn { position: absolute; right: 15px; top: 10px; font-size: 24px; cursor: pointer; color: var(--text-color); z-index: 10; }
+    .modal-content input, .modal-content textarea { width: 100%; margin: 10px 0; padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-color); color: var(--text-color); }
+    #gameFrame { width: 100%; height: 100%; border: none; background: #ffffff; }
+
+    /* Loading Spinner Animation */
+    .loading-container {
+      display: flex; flex-direction: column; justify-content: center; align-items: center;
+      grid-column: 1 / -1; padding: 40px; color: #94a3b8; font-size: 14px; gap: 10px;
+    }
+    .spinner {
+      width: 40px; height: 40px; border: 4px solid var(--border-color);
+      border-top: 4px solid var(--accent-color); border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Offline Screen with Downloaded Games Library */
+    #offlineScreen {
+      display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: var(--bg-color); z-index: 99999; flex-direction: column; justify-content: flex-start; align-items: center; text-align: center; padding: 20px; overflow-y: auto;
+    }
+    #offlineScreen h1 { color: #ef4444; font-size: 24px; margin-bottom: 5px; margin-top: 20px; }
+    #offlineScreen p { color: #94a3b8; margin-bottom: 20px; font-size: 14px; }
+    .offline-games-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; width: 100%; max-width: 800px; padding-bottom: 30px; }
+
+    /* Download Success Toast */
+    #downloadToast {
+      position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+      background: #22c55e; color: #fff; padding: 12px 24px; border-radius: 30px;
+      font-weight: bold; font-size: 14px; z-index: 10000; box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      display: none; align-items: center; gap: 8px; animation: bounceIn 0.3s ease;
+    }
+    @keyframes bounceIn {
+      0% { transform: translateX(-50%) scale(0.7); opacity: 0; }
+      100% { transform: translateX(-50%) scale(1); opacity: 1; }
+    }
+
+    /* WhatsApp Floating Button */
+    .whatsapp-btn {
+      position: fixed; bottom: 20px; right: 20px; background-color: #25d366; color: #fff;
+      border-radius: 50%; width: 55px; height: 55px; display: flex; justify-content: center; align-items: center;
+      font-size: 30px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); z-index: 999; text-decoration: none;
+    }
+    .whatsapp-btn:hover { transform: scale(1.1); }
+  </style>
+</head>
+<body>
+
+  <!-- Starting Intro Splash Screen Animation -->
+  <div id="splashScreen">
+    <img src="https://raw.githubusercontent.com/arafath-ait/ait-play/main/IMG_3190.jpeg" alt="Logo" class="splash-logo">
+  </div>
+
+  <!-- Offline Screen & Downloaded Games Library -->
+  <div id="offlineScreen">
+    <h1><i class="fa-solid fa-wifi-slash"></i> You are Offline</h1>
+    <p>Play your downloaded games instantly without internet!</p>
+    <div class="offline-games-grid" id="offlineGamesContainer"></div>
+  </div>
+
+  <!-- Download Success Toast -->
+  <div id="downloadToast">
+    <i class="fa-solid fa-circle-check"></i> <span id="toastMsg">Action completed successfully!</span>
+  </div>
+
+  <header>
+    <div class="logo-container" id="adminLogo">
+      <img src="https://raw.githubusercontent.com/arafath-ait/ait-play/main/IMG_3190.jpeg" alt="AIT PLAY Logo" class="logo-img">
+      <span class="logo-text">AIT PLAY</span>
+    </div>
+    <div class="header-actions">
+      <div class="visitor-badge" id="visitorCount">Views: ...</div>
+      <button class="bulb-btn" id="themeBtn" title="Toggle Theme"><i class="fa-solid fa-lightbulb"></i></button>
+      
+      <button class="download-nav-btn" id="openDownloadsModal" title="Downloaded Games"><i class="fa-solid fa-download"></i> Downloads</button>
+      <button class="req-btn" id="openReqModal">+ Idea</button>
+      <button class="login-nav-btn" id="openLoginModal">Login</button>
+    </div>
+  </header>
+
+  <!-- Login Modal -->
+  <div class="modal" id="loginModal">
+    <div class="modal-content">
+      <span class="close-btn" id="closeLoginModal">&times;</span>
+      <h3 style="color: var(--accent-color); margin-bottom: 10px;">Create Account / Login</h3>
+      <p style="font-size: 12px; color: #94a3b8; margin-bottom: 15px;">Enter a unique username and password. Usernames must be unique!</p>
+      <input type="text" id="loginUsername" placeholder="Unique Name">
+      <input type="password" id="loginPassword" placeholder="Password">
+      <button class="req-btn" style="width: 100%; margin-top: 10px;" id="submitLogin">Login / Register</button>
+    </div>
+  </div>
+
+  <!-- Downloads Modal -->
+  <div class="playlist-modal" id="downloadsModal">
+    <div class="playlist-content" style="max-width: 500px;">
+      <div class="playlist-header">
+        <h3 style="color: #a855f7;"><i class="fa-solid fa-download"></i> Downloaded Games</h3>
+        <span class="close-btn" id="closeDownloadsModal" style="position:static; font-size:20px;">&times;</span>
+      </div>
+      <div id="downloadsContainer">
+        <p style="text-align:center; color:#94a3b8; padding:20px;">No downloaded games yet!</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="controls-container">
+    <input type="text" class="search-box" id="searchBox" placeholder="Search Games...">
+    <button class="random-btn" id="randomGameBtn" title="Play Random Game">
+      <i class="fa-solid fa-dice"></i>
+    </button>
+  </div>
+
+  <main class="games-grid" id="gamesContainer">
+    <div class="loading-container">
+      <div class="spinner"></div>
+      Loading games...
+    </div>
+  </main>
+
+  <!-- Request Modal -->
+  <div class="modal" id="reqModal">
+    <div class="modal-content">
+      <span class="close-btn" id="closeReqModal">&times;</span>
+      <h3>Request A Game Idea</h3>
+      <input type="text" id="reqName" placeholder="Your Name">
+      <textarea id="reqIdea" rows="4" placeholder="Describe the game idea..."></textarea>
+      <button class="req-btn" style="width: 100%;" id="submitReq">Submit Idea</button>
+    </div>
+  </div>
+
+  <!-- Game Player Modal -->
+  <div class="modal" id="gameModal">
+    <div class="game-player-content">
+      <span class="close-btn" id="closeGameModal">&times;</span>
+      <iframe id="gameFrame" src="about:blank"></iframe>
+    </div>
+  </div>
+
+  <!-- WhatsApp Floating Icon -->
+  <a href="https://wa.me/917558961843" target="_blank" class="whatsapp-btn" title="Contact on WhatsApp">
+    <i class="fa-brands fa-whatsapp"></i>
+  </a>
+
+  <!-- Firebase Scripts -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCXMAdXRsyubfJFZRUoXYoYjBWjBZd7VxE",
+      authDomain: "ait-game-store.firebaseapp.com",
+      projectId: "ait-game-store",
+      storageBucket: "ait-game-store.firebasestorage.app",
+      messagingSenderId: "146438462272",
+      appId: "1:146438462272:web:92a9cea7d1383f650d78a5"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    // Check Login State on Load
+    const openLoginModalBtn = document.getElementById('openLoginModal');
+    const loginModal = document.getElementById('loginModal');
+    const currentUser = localStorage.getItem('ait_logged_user');
+
+    if (currentUser) {
+      openLoginModalBtn.style.display = 'none';
+    }
+
+    document.getElementById('openLoginModal').onclick = () => loginModal.style.display = 'flex';
+    document.getElementById('closeLoginModal').onclick = () => loginModal.style.display = 'none';
+
+    document.getElementById('submitLogin').onclick = () => {
+      const uName = document.getElementById('loginUsername').value.trim();
+      const uPass = document.getElementById('loginPassword').value.trim();
+
+      if (!uName || !uPass) {
+        alert("Please enter both name and password!");
+        return;
+      }
+
+      // Check if username already exists in Firestore database
+      db.collection("users").where("username", "==", uName).get().then((snapshot) => {
+        if (!snapshot.empty) {
+          // User exists, check password
+          const userData = snapshot.docs[0].data();
+          if (userData.password === uPass) {
+            localStorage.setItem('ait_logged_user', uName);
+            loginModal.style.display = 'none';
+            openLoginModalBtn.style.display = 'none';
+            showToast(`Welcome back, ${uName}! 👋`);
+          } else {
+            alert("Incorrect password for this username!");
+          }
+        } else {
+          // New user, register unique name
+          db.collection("users").add({
+            username: uName,
+            password: uPass,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+          }).then(() => {
+            localStorage.setItem('ait_logged_user', uName);
+            loginModal.style.display = 'none';
+            openLoginModalBtn.style.display = 'none';
+            showToast(`Account created successfully! Welcome ${uName} 🎉`);
+          }).catch(() => {
+            alert("Error creating account. Try another name!");
+          });
+        }
+      }).catch(() => {
+        alert("Connection error. Please try again!");
+      });
+    };
+
+    // Offline Status Monitor & Library Loader
+    const offlineScreen = document.getElementById('offlineScreen');
+    function updateOnlineStatus() {
+      if (navigator.onLine) {
+        offlineScreen.style.display = 'none';
+      } else {
+        offlineScreen.style.display = 'flex';
+        renderOfflineDownloads();
+      }
+    }
+    window.addEventListener('online', updateOnlineStatus);
+    window.addEventListener('offline', updateOnlineStatus);
+    updateOnlineStatus();
+
+    // Auto Dark/Light Mode
+    const themeBtn = document.getElementById('themeBtn');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+    
+    function setTheme(isLight) {
+      if (isLight) {
+        document.body.classList.add('light-theme');
+        themeBtn.classList.remove('active');
+      } else {
+        document.body.classList.remove('light-theme');
+        themeBtn.classList.add('active');
+      }
+    }
+    setTheme(!prefersDark.matches);
+
+    themeBtn.addEventListener('click', () => {
+      document.body.classList.toggle('light-theme');
+      themeBtn.classList.toggle('active');
+    });
+
+    // Live Visitor Counter Logic
+    const visitorCountEl = document.getElementById('visitorCount');
+    const visitorRef = db.collection("stats").doc("visitors");
+    visitorRef.get().then((doc) => {
+      let count = doc.exists ? (doc.data().count || 150) + 1 : 151;
+      visitorRef.set({ count: count }, { merge: true });
+      visitorCountEl.innerText = `Views: ${count}`;
+    }).catch(() => {
+      visitorCountEl.innerText = `Views: 152`;
+    });
+
+    // Downloads Modal Logic
+    const downloadsModal = document.getElementById('downloadsModal');
+    document.getElementById('openDownloadsModal').onclick = () => {
+      renderDownloadsList();
+      downloadsModal.style.display = 'flex';
+    };
+    document.getElementById('closeDownloadsModal').onclick = () => {
+      downloadsModal.style.display = 'none';
+    };
+
+    // LocalStorage Game Download System
+    function downloadGameLocally(id, title) {
+      const selectedGame = gamesList.find(g => g.id === id);
+      if (!selectedGame) return;
+
+      let downloaded = JSON.parse(localStorage.getItem('ait_downloaded_games') || '{}');
+      downloaded[id] = {
+        id: selectedGame.id,
+        title: selectedGame.title,
+        code: selectedGame.code,
+        isStar: selectedGame.isStar || false
+      };
+      localStorage.setItem('ait_downloaded_games', JSON.stringify(downloaded));
+
+      showToast(`"${title}" downloaded for offline play! 📥`);
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('downloadToast');
+      document.getElementById('toastMsg').innerText = msg;
+      toast.style.display = 'flex';
+      setTimeout(() => {
+        toast.style.display = 'none';
+      }, 3000);
+    }
+
+    function renderDownloadsList() {
+      const container = document.getElementById('downloadsContainer');
+      let downloaded = JSON.parse(localStorage.getItem('ait_downloaded_games') || '{}');
+      const keys = Object.keys(downloaded);
+
+      if (keys.length === 0) {
+        container.innerHTML = "<p style='text-align:center; color:#94a3b8; padding:20px;'>No downloaded games yet! Click 3 dots on any game to download.</p>";
+        return;
+      }
+
+      container.innerHTML = '';
+      keys.forEach(key => {
+        const game = downloaded[key];
+        const item = document.createElement('div');
+        item.className = 'song-item';
+        item.innerHTML = `
+          <span>🎮 ${game.title}</span>
+          <div style="display:flex; gap:10px;">
+            <button class="req-btn" style="padding:4px 10px; font-size:12px;" onclick="openDownloadedGame('${game.id}')">Play</button>
+            <button class="delete-btn" style="background:#ef4444; border:none; color:#fff; padding:4px 8px; border-radius:6px; cursor:pointer;" onclick="removeDownload('${game.id}')">🗑️</button>
+          </div>
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    function renderOfflineDownloads() {
+      const container = document.getElementById('offlineGamesContainer');
+      let downloaded = JSON.parse(localStorage.getItem('ait_downloaded_games') || '{}');
+      const keys = Object.keys(downloaded);
+
+      if (keys.length === 0) {
+        container.innerHTML = "<p style='grid-column:1/-1; color:#94a3b8;'>No downloaded games found for offline play. Connect to internet and download games first!</p>";
+        return;
+      }
+
+      container.innerHTML = '';
+      keys.forEach(key => {
+        const game = downloaded[key];
+        const card = document.createElement('div');
+        card.className = 'game-card';
+        card.innerHTML = `
+          <div class="game-icon"><i class="fa-solid fa-gamepad"></i></div>
+          <div class="game-title">${game.title}</div>
+          <button class="play-btn" onclick="openDownloadedGame('${game.id}')">Play Offline</button>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function removeDownload(id) {
+      let downloaded = JSON.parse(localStorage.getItem('ait_downloaded_games') || '{}');
+      delete downloaded[id];
+      localStorage.setItem('ait_downloaded_games', JSON.stringify(downloaded));
+      renderDownloadsList();
+      showToast("Game removed from downloads!");
+    }
+
+    function openDownloadedGame(id) {
+      downloadsModal.style.display = 'none';
+      offlineScreen.style.display = 'none';
+      let downloaded = JSON.parse(localStorage.getItem('ait_downloaded_games') || '{}');
+      const game = downloaded[id];
+      if (game) {
+        gameModal.style.display = 'flex';
+        const doc = gameFrame.contentWindow.document;
+        doc.open();
+        doc.write(game.code);
+        doc.close();
+      }
+    }
+
+    // Copy Direct Game Link Function
+    function copyGameLink(title, id) {
+      const directUrl = `${window.location.origin}${window.location.pathname}?game=${id}`;
+      navigator.clipboard.writeText(directUrl).then(() => {
+        showToast(`Direct link for "${title}" copied! 🔗`);
+      });
+    }
+
+    // Admin Navigation (Long Press Logo for 3s)
+    const adminLogo = document.getElementById('adminLogo');
+    let pressTimer;
+    adminLogo.addEventListener('touchstart', startPress);
+    adminLogo.addEventListener('mousedown', startPress);
+    adminLogo.addEventListener('touchend', cancelPress);
+    adminLogo.addEventListener('mouseup', cancelPress);
+
+    function startPress() {
+      pressTimer = setTimeout(() => {
+        window.location.href = "https://arafath-ait.github.io/login-website/";
+      }, 3000);
+    }
+    function cancelPress() { clearTimeout(pressTimer); }
+
+    // Request Modal Logic
+    const reqModal = document.getElementById('reqModal');
+    const submitReqBtn = document.getElementById('submitReq');
+
+    document.getElementById('openReqModal').onclick = () => reqModal.style.display = 'flex';
+    document.getElementById('closeReqModal').onclick = () => reqModal.style.display = 'none';
+
+    submitReqBtn.onclick = () => {
+      const name = document.getElementById('reqName').value.trim();
+      const idea = document.getElementById('reqIdea').value.trim();
+
+      if(name && idea) {
+        submitReqBtn.innerText = "Submitting...";
+        submitReqBtn.disabled = true;
+
+        db.collection("requests").add({
+          name: name,
+          idea: idea,
+          timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        }).then(() => {
+          alert("Successfully Requested!");
+          reqModal.style.display = 'none';
+          document.getElementById('reqName').value = '';
+          document.getElementById('reqIdea').value = '';
+        }).catch(() => {
+          alert("Error sending request!");
+        }).finally(() => {
+          submitReqBtn.innerText = "Submit Idea";
+          submitReqBtn.disabled = false;
+        });
+      } else {
+        alert("Please fill all fields!");
+      }
+    };
+
+    document.addEventListener('click', (e) => {
+      if(!e.target.classList.contains('menu-dots')) {
+        document.querySelectorAll('.dropdown-menu').forEach(menu => menu.classList.remove('show'));
+      }
+    });
+
+    function toggleMenu(event, id) {
+      event.stopPropagation();
+      document.querySelectorAll('.dropdown-menu').forEach(menu => {
+        if(menu.id !== `menu-${id}`) menu.classList.remove('show');
+      });
+      const currentMenu = document.getElementById(`menu-${id}`);
+      if(currentMenu) currentMenu.classList.toggle('show');
+    }
+
+    function copyGameCode(id, title) {
+      const selectedGame = gamesList.find(g => g.id === id);
+      if (selectedGame && selectedGame.code) {
+        navigator.clipboard.writeText(selectedGame.code).then(() => {
+          alert(`Code for "${title}" copied!`);
+        });
+      }
+    }
+
+    function shareGame(title, id) {
+      const shareUrl = `${window.location.origin}${window.location.pathname}?game=${id}`;
+      if (navigator.share) {
+        navigator.share({ title: title, text: `Play ${title} on AIT Play!`, url: shareUrl }).catch(() => {});
+      } else {
+        copyGameLink(title, id);
+      }
+    }
+
+    // Random Game Selector
+    document.getElementById('randomGameBtn').onclick = () => {
+      if (gamesList.length === 0) {
+        alert("No games available!");
+        return;
+      }
+      const randomIndex = Math.floor(Math.random() * gamesList.length);
+      openGame(gamesList[randomIndex].id);
+    };
+
+    // Fetch Published Games
+    const gamesContainer = document.getElementById('gamesContainer');
+    let gamesList = [];
+
+    db.collection("published_games").orderBy("timestamp", "desc").onSnapshot((snapshot) => {
+      gamesContainer.innerHTML = '';
+      gamesList = [];
+      
+      if (snapshot.empty) {
+        gamesContainer.innerHTML = "<p style='grid-column: 1/-1; text-align:center; padding:30px; color:#94a3b8;'>No games found!</p>";
+        return;
+      }
+
+      snapshot.forEach((doc) => {
+        const game = doc.data();
+        game.id = doc.id;
+        gamesList.push(game);
+
+        const isStar = game.isStar || false;
+        const gameCard = document.createElement('div');
+        gameCard.className = `game-card ${isStar ? 'star-game' : ''}`;
+        gameCard.innerHTML = `
+          ${isStar ? '<div class="star-badge"><i class="fa-solid fa-star"></i></div>' : ''}
+          <div class="menu-dots" onclick="toggleMenu(event, '${doc.id}')"><i class="fa-solid fa-ellipsis-vertical"></i></div>
+          <div class="dropdown-menu" id="menu-${doc.id}">
+            <div class="dropdown-item" onclick="copyGameLink('${game.title}', '${doc.id}')">
+              <i class="fa-solid fa-link"></i> Copy Link
+            </div>
+            <div class="dropdown-item" onclick="downloadGameLocally('${doc.id}', '${game.title}')">
+              <i class="fa-solid fa-download"></i> Download Game
+            </div>
+            <div class="dropdown-item" onclick="shareGame('${game.title}', '${doc.id}')">
+              <i class="fa-solid fa-share-nodes"></i> Share Game
+            </div>
+            <div class="dropdown-item" onclick="copyGameCode('${doc.id}', '${game.title}')">
+              <i class="fa-solid fa-code"></i> Copy Code
+            </div>
+          </div>
+          <div class="game-icon"><i class="fa-solid fa-gamepad"></i></div>
+          <div class="game-title">${game.title}</div>
+          <button class="play-btn" onclick="openGame('${doc.id}')">Play Now</button>
+        `;
+        gamesContainer.appendChild(gameCard);
+      });
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const targetGameId = urlParams.get('game');
+      if (targetGameId) {
+        setTimeout(() => {
+          openGame(targetGameId);
+        }, 500);
+      }
+    });
+
+    document.getElementById('searchBox').addEventListener('input', (e) => {
+      const query = e.target.value.toLowerCase();
+      document.querySelectorAll('.game-card').forEach(card => {
+        const title = card.querySelector('.game-title').innerText.toLowerCase();
+        card.style.display = title.includes(query) ? 'flex' : 'none';
+      });
+    });
+
+    const gameModal = document.getElementById('gameModal');
+    const gameFrame = document.getElementById('gameFrame');
+    
+    document.getElementById('closeGameModal').onclick = () => {
+      gameModal.style.display = 'none';
+      gameFrame.src = 'about:blank';
+      window.history.replaceState({}, document.title, window.location.pathname);
+    };
+
+    function openGame(id) {
+      const selectedGame = gamesList.find(g => g.id === id);
+      if(selectedGame) {
+        gameModal.style.display = 'flex';
+        const doc = gameFrame.contentWindow.document;
+        doc.open();
+        doc.write(selectedGame.code);
+        doc.close();
+      }
+    }
+  </script>
+</body>
+</html>
